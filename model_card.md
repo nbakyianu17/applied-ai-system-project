@@ -145,7 +145,53 @@ The biggest limit is 20 songs. With 200 songs per genre and audio features compu
 
 ---
 
-## 9. Personal Reflection
+## 9. Responsible AI Reflection
+
+### Limitations and Biases
+
+The most significant bias in this system is structural: genre carries 28% of the total score (2.0 out of 7.0 points), which means a song from the "wrong" genre almost never appears in the top 5 even if every other feature is a near-perfect match. This creates a filter bubble by design. A lofi listener will never discover a jazz track that feels identical in practice — the label mismatch alone buries it.
+
+Mood compounds this. "Chill" and "focused" are treated as completely different categories with no partial credit, even though most listeners experience them as nearly interchangeable. The result is that the system's top-5 lists feel coherent for common taste profiles (pop, lofi, rock) and hollow for anyone whose preferences don't map cleanly onto the genre/mood taxonomy the catalog was built around.
+
+The catalog itself carries a deeper bias: 20 songs, mostly English-language Western music, with numeric feature values assigned by hand rather than computed from actual audio. The system's taste was shaped by whoever built the catalog and chose those values — which in this case was one person. There is no Afrobeats, K-pop, Bollywood, or regional genre representation. A listener whose musical identity sits outside the catalog's frame is not an edge case; they are simply invisible.
+
+Finally, the system assumes preference stability. It applies the same profile every time, with no way to account for context — the same person might want something completely different at 7am versus 11pm, while working versus commuting. That context-blindness is a known limitation of static content-based filtering.
+
+---
+
+### Could This AI Be Misused?
+
+This specific system is low-stakes — it recommends songs from a 20-track catalog. Direct harm is unlikely. But the design patterns it uses appear in higher-stakes systems, and those patterns carry real misuse risks worth naming.
+
+**Filter bubble amplification.** A recommender that over-weights categorical features (genre, mood) and ignores cross-genre discovery will, at scale, narrow what people hear rather than expand it. Applied to news, job listings, or social content, the same logic actively limits what people encounter and can reinforce existing preferences in ways that are hard to detect or reverse.
+
+**Catalog bias as silent exclusion.** If the underlying data doesn't represent a group, the system won't serve that group — and it won't announce that failure. It will just quietly return worse results. At scale and in higher-stakes domains, this becomes discriminatory in effect even without discriminatory intent.
+
+**Preventing misuse in this system:** The explainability built into the scoring (every recommendation includes a feature-by-feature breakdown) is the most important safeguard. Users can see exactly why a result ranked where it did, which makes the system's assumptions auditable. For a production system, I would add: explicit catalog diversity monitoring, a mechanism to surface when a user's preferences are underrepresented in the data, and human review of recommendations for any new genre or demographic the system hasn't been evaluated against.
+
+---
+
+### What Surprised Me During Reliability Testing
+
+Two things stood out.
+
+First, the three "normal" profiles (pop, lofi, rock) scored between 6.75 and 6.92 out of 7.0 — almost perfect — while the edge cases dropped sharply to around 5.74 (Sad Bangers) and 4.97 (Perfectly Average). I expected the edge cases to score lower, but not by that much. The gap revealed how dependent the system is on having strong, consistent preference signals. When genre, mood, and energy all point in the same direction, the engine becomes highly confident very quickly. When they conflict or flatten out, it almost has nothing to work with.
+
+Second, the "Perfectly Average" profile — all numeric targets at 0.5 and a genre with only one song in the catalog — produced a 71% confidence score on its top result, but positions 2 through 5 were essentially arbitrary. The confidence score looks reasonable at the top level, but it masks how meaningless the rest of the list is. That's a subtle reliability problem: aggregate metrics can look fine while the system's actual usefulness for that user type has already collapsed. In a real product, that user would churn without ever knowing why.
+
+---
+
+### AI Collaboration on This Project
+
+I used Claude throughout this project — for coding help, debugging, writing, and working through design decisions. The collaboration was genuinely useful, but not uniformly so.
+
+**A helpful suggestion:** When I was designing the scoring formula, I asked Claude whether tempo should be scored on its raw BPM value or normalized. Claude pointed out that without normalization, a tempo target of 128 BPM and a song at 80 BPM would score a raw gap of 48 — far larger than any gap possible on the 0–1 features — and that this would let tempo dominate the result in a way that had nothing to do with its intended weight. It suggested normalizing tempo to a 0–1 scale using the catalog's BPM range before applying the proximity formula. That was the right call, and it's now part of the final implementation. Without that, the scoring would have been silently broken in a way that was hard to spot just by reading the code.
+
+**A flawed suggestion:** At one point Claude proposed using `danceability` as a scored feature alongside energy and valence. It generated a plausible-sounding justification — that danceability captures something distinct from energy, specifically the rhythmic regularity of a beat. When I tested it, adding danceability as a scored feature produced almost no change in the top-1 results across all six profiles but increased score noise in positions 3–5, making weaker matches appear more similar than they actually were. The feature was adding weight without adding signal. I removed it from scoring and kept it as a stored attribute only. The lesson: AI suggestions that sound well-reasoned still need to be tested empirically. A convincing rationale is not the same as a working feature.
+
+---
+
+## 10. Personal Reflection
 
 Honestly, I came into this project pretty confused. I understood conceptually that Spotify "learns what you like," but I had no idea what that actually meant in terms of code. Watching a simple list of numbers turn into what feels like a recommendation — that was the click moment for me.
 

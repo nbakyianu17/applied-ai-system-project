@@ -4,6 +4,24 @@
 
 ---
 
+## Demo Walkthrough
+
+📹 **[Watch the Loom video walkthrough](#)** ← *(replace `#` with your Loom URL)*
+
+The video shows: end-to-end system run across 3 user profiles, confidence scoring in action, and the reliability test suite producing a live pass/fail report.
+
+---
+
+## Portfolio
+
+**GitHub:** https://github.com/nbakyianu17/applied-ai-system-project
+
+**What this project says about me as an AI engineer:**
+
+This project shows that I think about AI systems as more than code that runs. Starting from a simple rule-based recommender, I added confidence scoring so the system quantifies its own certainty, a session logger so every decision is auditable, and a structured reliability suite that stress-tests the system against six distinct user profiles — including edge cases designed to break it. The test results (6/6 passed, 91% average confidence) matter less than the fact that I built the infrastructure to measure them. I'm drawn to the gap between a system that *seems* to work and one that can *prove* it works. I also take the ethics seriously: the model card names specific biases, explains how the same design patterns cause harm at scale, and reflects honestly on where AI assistance helped and where it led me astray. That combination — build it, test it, explain it, question it — is how I approach engineering work.
+
+---
+
 ## What It Does and Why It Matters
 
 VibeFinder takes a user's musical preferences — genre, mood, energy level, tempo, and more — and returns a ranked list of the best-matching songs from a catalog, along with a plain-language explanation of why each song was recommended.

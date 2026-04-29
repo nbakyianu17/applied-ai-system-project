@@ -5,7 +5,8 @@
       "Bash(pytest tests/ -v)",
       "Bash(python3 tests/test_reliability.py)",
       "Bash(python3 -c ' *)",
-      "Bash(/Library/Frameworks/Python.framework/Versions/3.13/bin/python3 -c ' *)"
+      "Bash(/Library/Frameworks/Python.framework/Versions/3.13/bin/python3 -c ' *)",
+      "Bash(python3 -m src.main)"
     ]
   }
 }
