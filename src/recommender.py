@@ -4,7 +4,6 @@ from dataclasses import dataclass
 TEMPO_MIN = 60
 TEMPO_MAX = 160
 
-# Max possible score — used for reference; not enforced in logic
 MAX_SCORE = 7.0
 
 # Point weights per feature
@@ -81,6 +80,16 @@ class Recommender:
         }
         _, reasons = score_song(prefs, song.__dict__)
         return " | ".join(reasons)
+
+
+def confidence_label(score: float) -> Tuple[float, str]:
+    """Return (0-1 confidence, High/Medium/Low label) for a raw score."""
+    pct = round(score / MAX_SCORE, 3)
+    if pct >= 0.80:
+        return pct, "High"
+    if pct >= 0.55:
+        return pct, "Medium"
+    return pct, "Low"
 
 
 def load_songs(csv_path: str) -> List[Dict]:

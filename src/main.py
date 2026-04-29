@@ -2,7 +2,9 @@
 Command line runner for the Music Recommender Simulation.
 """
 
-from recommender import load_songs, recommend_songs
+import sys
+from src.recommender import load_songs, recommend_songs, confidence_label
+from src.logger import log_session, log_error, get_logger
 
 SEPARATOR = "─" * 62
 
@@ -13,15 +15,23 @@ def print_recommendations(label: str, user_prefs: dict, songs: list, k: int = 5)
     print(f"  Genre: {user_prefs['genre']}  |  Mood: {user_prefs['mood']}")
     print(f"{'═' * 62}")
 
-    results = recommend_songs(user_prefs, songs, k=k)
+    try:
+        results = recommend_songs(user_prefs, songs, k=k)
+    except Exception as exc:
+        log_error(label, exc)
+        print(f"  ERROR: could not generate recommendations — {exc}")
+        return
+
+    log_session(label, user_prefs, results)
 
     for rank, (song, score, explanation) in enumerate(results, 1):
+        conf_pct, conf_label = confidence_label(score)
         bar_filled = int((score / 7.0) * 24)
         bar        = "█" * bar_filled + "░" * (24 - bar_filled)
-        pct        = (score / 7.0) * 100
+        pct        = conf_pct * 100
 
         print(f"\n  #{rank}  {song['title']}  —  {song['artist']}")
-        print(f"       [{bar}]  {score:.2f}/7.0  ({pct:.0f}%)")
+        print(f"       [{bar}]  {score:.2f}/7.0  ({pct:.0f}%)  confidence: {conf_label}")
         print(f"       {song['genre']} · {song['mood']} · "
               f"energy={song['energy']} · bpm={int(song['tempo_bpm'])}")
         print("       Reasons:")
@@ -32,8 +42,19 @@ def print_recommendations(label: str, user_prefs: dict, songs: list, k: int = 5)
 
 
 def main() -> None:
-    songs = load_songs("data/songs.csv")
+    log = get_logger()
+    log.info("=" * 50)
+    log.info("VibeFinder session started")
+
+    try:
+        songs = load_songs("data/songs.csv")
+    except Exception as exc:
+        log_error("load_songs", exc)
+        print(f"Fatal: could not load catalog — {exc}", file=sys.stderr)
+        sys.exit(1)
+
     print(f"\nLoaded songs: {len(songs)}")
+    log.info("Loaded %d songs from catalog", len(songs))
 
     # ── 1. High-Energy Pop ─────────────────────────────────────────────────
     high_energy_pop = {
@@ -75,12 +96,11 @@ def main() -> None:
     }
 
     # ── 4. EDGE CASE: High energy but sad/dark mood ────────────────────────
-    #    Conflicting signals — does the system handle the contradiction?
     sad_bangers = {
         "genre":                   "metal",
         "mood":                    "melancholic",
         "target_energy":           0.90,
-        "target_valence":          0.20,    # dark/sad
+        "target_valence":          0.20,
         "target_tempo_bpm":        155,
         "target_acousticness":     0.06,
         "target_bass_level":       0.85,
@@ -89,7 +109,6 @@ def main() -> None:
     }
 
     # ── 5. EDGE CASE: Genre orphan ─────────────────────────────────────────
-    #    Classical has only ONE song in the catalog — what fills spots 2–5?
     classical_fan = {
         "genre":                   "classical",
         "mood":                    "peaceful",
@@ -102,8 +121,7 @@ def main() -> None:
         "target_speechiness":      0.02,
     }
 
-    # ── 6. EDGE CASE: Perfectly average — no strong preference anywhere ────
-    #    All numeric targets at 0.5, neutral genre — tests scoring floor
+    # ── 6. EDGE CASE: Perfectly average ───────────────────────────────────
     plain_listener = {
         "genre":                   "indie pop",
         "mood":                    "relaxed",
@@ -127,6 +145,8 @@ def main() -> None:
 
     for label, prefs in profiles:
         print_recommendations(label, prefs, songs, k=5)
+
+    log.info("Session complete — %d profiles run", len(profiles))
 
 
 if __name__ == "__main__":
