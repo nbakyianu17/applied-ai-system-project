@@ -6,7 +6,7 @@
 
 ## Demo Walkthrough
 
-📹 **[Watch the Loom video walkthrough](#)** ← *(replace `#` with your Loom URL)*
+📹 **[Watch the Microsoft Teams video walkthrough](https://teams.microsoft.com/l/meetingrecap?driveId=b%216l6hQ_pyUEq-zFFjHCPu2FmVBTK1gpxEshQfXUF4F7EVaGNoTk9RS6MWslLFzlWK&driveItemId=01HJRL64UPR5XVLXJ2M5BID5HRTRGFJCIG&sitePath=https%3A%2F%2Fdrexel0-my.sharepoint.com%2F%3Av%3A%2Fg%2Fpersonal%2Fna959_drexel_edu%2FIQCPj29V3TpnQoH08ZxMVIkGAf9RxzEXyGKq0Y3HxB5FxTw&fileUrl=https%3A%2F%2Fdrexel0-my.sharepoint.com%2F%3Av%3A%2Fg%2Fpersonal%2Fna959_drexel_edu%2FIQCPj29V3TpnQoH08ZxMVIkGAf9RxzEXyGKq0Y3HxB5FxTw&threadId=19%3Ameeting_MTg4MzdiYTMtZGI5My00ZDQ5LWFmNWUtODVkY2QxNjUzNDVj%40thread.v2&organizerId=5d1e9d5b-3d37-4720-9150-7563e4cc9866&tenantId=3664e6fa-47bd-45a6-9670-8c4f080f8ca6&callId=2fe83be2-c917-4f9d-bba3-6751193f841d&threadType=Meeting&meetingType=MeetNow&subType=RecapSharingLink_RecapChiclet)**
 
 The video shows: end-to-end system run across 3 user profiles, confidence scoring in action, and the reliability test suite producing a live pass/fail report.
 
